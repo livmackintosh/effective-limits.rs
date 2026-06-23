@@ -68,7 +68,9 @@ fn ulimited_memory() -> Result<Option<u64>> {
     // https://github.com/NetBSD/src/blob/f869ef2144970023b53d335d9a23ecf100d4b973/sys/sys/resource.h#L98
     let rlimit_as = 10;
         }
-    else {
+    else if #[cfg( target_os="openbsd")] {
+    let rlimit_as = libc::RLIMIT_RSS;
+        } else {
     let rlimit_as = libc::RLIMIT_AS;
     }
     );
@@ -369,6 +371,9 @@ mod tests {
                     cfg_if!(
                     if #[cfg( target_os="netbsd")] {
                     let rlimit_as = 10;
+                        }
+                    else if #[cfg( target_os="openbsd")] {
+                    let rlimit_as = libc::RLIMIT_RSS;
                         }
                     else {
                     let rlimit_as = libc::RLIMIT_AS;
